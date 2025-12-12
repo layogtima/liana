@@ -4,7 +4,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sanctuary Management | The Liana Trust</title>
+    <title>Liana Trust Serpentarium | Habitat Environmental Monitoring</title>
+
+    <meta name="description"
+        content="Environmental monitoring for the various snakes at the Liana Trust Serpentarium." />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://liana.absurd.industries/" />
+    <meta property="og:title" content="Liana Trust Serpentarium" />
+    <meta property="og:description"
+        content="Environmental monitoring for the various snakes at the Liana Trust Serpentarium." />
+    <meta property="og:image" content="https://liana.absurd.industries/meta.jpg" />
+
+    <!-- X (Twitter) -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://liana.absurd.industries/" />
+    <meta property="twitter:title" content="Liana Trust Serpentarium" />
+    <meta property="twitter:description"
+        content="Environmental monitoring for the various snakes at the Liana Trust Serpentarium." />
+    <meta property="twitter:image" content="https://liana.absurd.industries/meta.jpg" />
+
+    <!-- Meta Tags Generated with https://metatags.io -->
+
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Serpentarium" />
+    <link rel="manifest" href="/favicon/site.webmanifest" />
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -96,6 +124,58 @@
                 opacity: 1;
             }
         }
+
+        .slide-up {
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .live-pulse {
+            animation: livePulse 2s infinite;
+        }
+
+        @keyframes livePulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.7);
+            }
+
+            50% {
+                opacity: 0.7;
+                box-shadow: 0 0 0 10px rgba(255, 107, 53, 0);
+            }
+        }
+
+        .glass-overlay {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .camera-feed {
+            background: linear-gradient(135deg, #2D2D2D 0%, #1a1a1a 100%);
+        }
+
+        .sensor-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+        }
     </style>
 </head>
 
@@ -109,8 +189,9 @@
                         <i class="fas fa-snake text-beige-warm text-lg"></i>
                     </div>
                     <div>
-                        <h1 class="text-xl font-bold text-text-dark uppercase tracking-wide">SANCTUARY MANAGEMENT</h1>
-                        <p class="text-xs text-text-mid uppercase tracking-wider">The Liana Trust - Care Dashboard</p>
+                        <h1 class="text-xl font-bold text-text-dark uppercase tracking-wide">Liana Trust Serpentarium
+                        </h1>
+                        <p class="text-xs text-text-mid uppercase tracking-wider">Habitat Environmental Monitoring</p>
                     </div>
                 </div>
 
@@ -148,10 +229,6 @@
                             :class="['px-3 py-1 rounded-full text-sm font-medium transition-all', currentFilter === 'critical' ? 'bg-critical text-white' : 'bg-beige-cool text-text-dark hover:bg-critical/20']">
                             Critical ({{ criticalCount }})
                         </button>
-                        <button @click="setFilter('eggs')"
-                            :class="['px-3 py-1 rounded-full text-sm font-medium transition-all', currentFilter === 'eggs' ? 'bg-laboratory text-white' : 'bg-beige-cool text-text-dark hover:bg-laboratory/20']">
-                            Incubating ({{ eggsCount }})
-                        </button>
                     </div>
                 </div>
             </div>
@@ -164,7 +241,7 @@
                             <tr>
                                 <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">#
                                 </th>
-                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">QR / ID
+                                <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">ID
                                 </th>
                                 <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Species &
                                     Location</th>
@@ -255,21 +332,239 @@
             </div>
         </div>
 
-        <!-- QR Code Modal -->
-        <div v-if="showQRModal"
-            class="fixed inset-0 bg-text-dark/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            @click="closeQR">
-            <div class="bg-white rounded-xl p-6 max-w-sm w-full" @click.stop>
-                <div class="text-center">
-                    <h3 class="text-lg font-bold text-text-dark mb-4">{{ selectedSnakeForQR?.id }} QR Code</h3>
-                    <div class="w-48 h-48 bg-text-dark mx-auto mb-4 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-qrcode text-white text-6xl"></i>
+        <!-- Snake Profile Modal -->
+        <div v-if="selectedSnake"
+            class="fixed inset-0 bg-text-dark/80 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4"
+            @click="closeSnakeProfile">
+            <div class="bg-beige-warm rounded-t-xl sm:rounded-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto slide-up"
+                @click.stop>
+
+                <!-- Media Gallery Header -->
+                <div class="relative">
+                    <!-- Media Carousel -->
+                    <div class="aspect-video relative overflow-hidden sm:rounded-t-xl">
+                        <!-- Video/Image Display -->
+                        <div v-if="selectedSnake.media.videos.length > 0 && currentMediaType === 'video'"
+                            class="h-full">
+                            <video :src="selectedSnake.media.videos[currentMediaIndex]" loop autoplay playsinline muted
+                                class="object-cover w-full h-full"></video>
+                            <div class="absolute top-4 right-4">
+                                <div class="w-3 h-3 bg-radium rounded-full live-pulse"></div>
+                            </div>
+                        </div>
+
+                        <div v-else-if="selectedSnake.media.images.length > 0 && currentMediaType === 'image'"
+                            class="h-full">
+                            <img :src="selectedSnake.media.images[currentMediaIndex]"
+                                class="object-cover w-full h-full" />
+                        </div>
+
+                        <div v-else class="camera-feed h-full flex items-center justify-center">
+                            <div class="text-center text-text-mid">
+                                <i class="fas fa-image text-4xl mb-2 opacity-30"></i>
+                                <p class="text-sm opacity-60">No media available</p>
+                            </div>
+                        </div>
+
+                        <!-- Media Controls -->
+                        <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between">
+                            <div class="flex space-x-2">
+                                <button v-if="selectedSnake.media.videos.length > 0" @click="switchMediaType('video')"
+                                    :class="['px-3 py-1 rounded text-xs font-medium transition-colors', currentMediaType === 'video' ? 'bg-radium text-white' : 'bg-white/20 text-white hover:bg-white/30']">
+                                    <i class="fas fa-video mr-1"></i>Feed
+                                </button>
+                                <button v-if="selectedSnake.media.images.length > 0" @click="switchMediaType('image')"
+                                    :class="['px-3 py-1 rounded text-xs font-medium transition-colors', currentMediaType === 'image' ? 'bg-uranium text-white' : 'bg-white/20 text-white hover:bg-white/30']">
+                                    <i class="fas fa-camera mr-1"></i>Photos
+                                </button>
+                            </div>
+
+                            <!-- Navigation -->
+                            <div v-if="currentMediaArray.length > 1" class="flex items-center space-x-2">
+                                <button @click="previousMedia"
+                                    class="bg-white/20 hover:bg-white/30 text-white p-2 rounded">
+                                    <i class="fas fa-chevron-left text-xs"></i>
+                                </button>
+                                <span class="text-white text-xs bg-white/20 px-2 py-1 rounded">
+                                    {{ currentMediaIndex + 1 }} / {{ currentMediaArray.length }}
+                                </span>
+                                <button @click="nextMedia" class="bg-white/20 hover:bg-white/30 text-white p-2 rounded">
+                                    <i class="fas fa-chevron-right text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Snake Title Overlay -->
+                        <div class="absolute bottom-16 left-4">
+                            <div class="glass-overlay rounded-lg p-4">
+                                <div class="flex justify-between items-start">
+                                    <div class="flex-1">
+                                        <h2 @click="startEdit('name')" @blur="saveField('name', $event)"
+                                            @keyup.enter="$event.target.blur()" :contenteditable="adminMode"
+                                            :class="adminMode ? 'cursor-pointer hover:bg-white/10 rounded' : ''"
+                                            class="text-xl font-bold text-white outline-none">{{ selectedSnake.id }}
+                                        </h2>
+                                        <p @click="startEdit('species')" @blur="saveField('species', $event)"
+                                            @keyup.enter="$event.target.blur()" :contenteditable="adminMode"
+                                            :class="adminMode ? 'cursor-pointer hover:bg-white/10 rounded' : ''"
+                                            class="text-beige-cool text-sm outline-none">{{ selectedSnake.species }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Close Button -->
+                        <div class="absolute top-4 right-4">
+                            <button @click="closeSnakeProfile"
+                                class="bg-white/20 hover:bg-white/30 text-white p-2 rounded-lg transition-colors">
+                                <i class="fas fa-times text-sm"></i>
+                            </button>
+                        </div>
                     </div>
-                    <p class="text-sm text-text-mid mb-4">Scan to view detailed profile and care history</p>
-                    <button @click="closeQR"
-                        class="bg-laboratory text-white px-4 py-2 rounded-lg hover:bg-laboratory/80 transition-colors">
-                        Close
-                    </button>
+                </div>
+
+                <!-- Modal Content -->
+                <div class="p-6 space-y-6">
+                    <!-- Sensor Network Map -->
+                    <div class="hidden">
+                        <h3 class="text-lg font-bold mb-3 flex items-center text-text-dark uppercase tracking-wide">
+                            <i class="fas fa-network-wired mr-2 text-laboratory"></i>
+                            Sensor Network ({{ selectedSnake.sensorCount }} Points)
+                        </h3>
+
+                        <div class="bg-white rounded-lg border border-polonium p-6 relative overflow-hidden">
+                            <!-- Enclosure outline -->
+                            <div
+                                class="aspect-video border-2 border-text-light/30 rounded-lg relative bg-beige-cool/30">
+                                <!-- Sensor dots positioned around enclosure -->
+                                <div v-for="(sensor, index) in selectedSnake.sensors" :key="sensor.id"
+                                    class="sensor-dot absolute" :class="getSensorColor(sensor.type)"
+                                    :style="getSensorPosition(index, selectedSnake.sensors.length)"
+                                    :title="`${sensor.type}: ${sensor.value}${sensor.unit} at ${sensor.location}`">
+                                </div>
+
+                                <!-- Legend -->
+                                <div class="absolute bottom-2 left-2 right-2 bg-white/90 rounded p-2">
+                                    <div class="grid grid-cols-3 gap-2 text-xs">
+                                        <div class="flex items-center space-x-1">
+                                            <div class="w-2 h-2 bg-radium rounded-full"></div>
+                                            <span>Temperature</span>
+                                        </div>
+                                        <div class="flex items-center space-x-1">
+                                            <div class="w-2 h-2 bg-uranium rounded-full"></div>
+                                            <span>Humidity</span>
+                                        </div>
+                                        <div class="flex items-center space-x-1">
+                                            <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                                            <span>Light</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Environmental Grid -->
+                    <div>
+                        <h3 class="text-lg font-bold mb-3 flex items-center text-text-dark uppercase tracking-wide">
+                            <i class="fas fa-thermometer-quarter mr-2 text-laboratory"></i>
+                            Environmental Parameters
+                        </h3>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- Temperature -->
+                            <div class="bg-white rounded-lg border border-polonium p-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-thermometer-half mr-2 text-radium"></i>
+                                        <span class="font-bold text-text-dark text-sm">TEMP</span>
+                                    </div>
+                                    <span class="text-lg font-bold text-radium">{{ selectedSnake.temperature }}°C</span>
+                                </div>
+
+                                <div class="relative h-2 bg-beige-cool rounded-full overflow-hidden">
+                                    <div class="absolute h-full bg-laboratory/30 rounded-full"
+                                        :style="`left: ${((selectedSnake.idealTemp.min + 5)/50)*100}%; width: ${((selectedSnake.idealTemp.max - selectedSnake.idealTemp.min)/50)*100}%`">
+                                    </div>
+                                    <div class="absolute top-0 h-full w-1 bg-radium rounded-full"
+                                        :style="`left: ${((selectedSnake.temperature + 5)/50)*100}%`">
+                                    </div>
+                                </div>
+
+                                <div class="text-xs text-text-mid mt-2">
+                                    Range: {{ selectedSnake.idealTemp.min }}-{{ selectedSnake.idealTemp.max }}°C
+                                </div>
+                            </div>
+
+                            <!-- Humidity -->
+                            <div class="bg-white rounded-lg border border-polonium p-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-tint mr-2 text-uranium"></i>
+                                        <span class="font-bold text-text-dark text-sm">HUMIDITY</span>
+                                    </div>
+                                    <span class="text-lg font-bold text-uranium">{{ selectedSnake.humidity }}%</span>
+                                </div>
+
+                                <div class="relative h-2 bg-beige-cool rounded-full overflow-hidden">
+                                    <div class="absolute h-full bg-uranium/30 rounded-full"
+                                        :style="`left: ${selectedSnake.idealHumidity.min}%; width: ${selectedSnake.idealHumidity.max - selectedSnake.idealHumidity.min}%`">
+                                    </div>
+                                    <div class="absolute top-0 h-full w-1 bg-uranium rounded-full"
+                                        :style="`left: ${selectedSnake.humidity}%`">
+                                    </div>
+                                </div>
+
+                                <div class="text-xs text-text-mid mt-2">
+                                    Range: {{ selectedSnake.idealHumidity.min }}-{{ selectedSnake.idealHumidity.max }}%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lighting Control System -->
+                    <div v-if="selectedSnake.lightingCycle.lights.length > 0">
+                        <h3 class="text-lg font-bold mb-3 flex items-center text-text-dark uppercase tracking-wide">
+                            <i class="fas fa-sun mr-2 text-laboratory"></i>
+                            Systems
+                        </h3>
+
+                        <div class="bg-white rounded-lg border border-polonium p-4">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center space-x-2">
+                                    <div
+                                        :class="['w-3 h-3 rounded-full', selectedSnake.lightingCycle.active ? 'bg-laboratory animate-pulse' : 'bg-text-light']">
+                                    </div>
+                                    <span class="text-xs text-text-mid">{{ selectedSnake.lightingCycle.active ? 'ACTIVE'
+                                        : 'MANUAL' }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Light sources -->
+                            <div class="space-y-3">
+                                <div v-for="light in selectedSnake.lightingCycle.lights" :key="light.id"
+                                    class="flex items-center justify-between p-3 bg-beige-cool/50 rounded-lg">
+                                    <div class="flex items-center space-x-3">
+                                        <i :class="light.icon"
+                                            :class="light.active ? 'text-yellow-500' : 'text-text-light'"></i>
+                                        <div>
+                                            <div class="text-sm font-medium text-text-dark">{{ light.name }}</div>
+                                            <div class="text-xs text-text-mid">{{ light.schedule }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <div
+                                            :class="['w-8 h-4 rounded-full border border-text-light', light.active ? 'bg-laboratory' : 'bg-text-light']">
+                                            <div
+                                                :class="['w-3 h-3 bg-white rounded-full transition-transform', light.active ? 'translate-x-4' : 'translate-x-0']">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -357,6 +652,10 @@
                     showAssignModal: false,
                     selectedSnakeForQR: null,
                     selectedSnakeForAssign: null,
+                    selectedSnake: null,
+                    currentMediaType: 'video',
+                    currentMediaIndex: 0,
+                    adminMode: false,
                     notification: null,
                     assignmentData: {
                         carePerson: '',
@@ -369,39 +668,107 @@
                     snakes: [
                         {
                             id: 'BuCaKa30',
+                            name: 'Kala',
+                            nickname: 'The Night Hunter',
                             region: 'Karnataka',
                             enclosure: 'B1',
                             status: 'critical',
                             temp: 19.2,
+                            temperature: 19.2,
                             humidity: 45,
                             tempRange: { min: 22, max: 28 },
+                            idealTemp: { min: 22, max: 28 },
                             humidityRange: { min: 60, max: 80 },
+                            idealHumidity: { min: 60, max: 80 },
                             alerts: ['Low Temp', 'Low Humidity'],
-                            needsAttention: true
+                            needsAttention: true,
+                            species: 'Bungarus caeruleus (Common Krait)',
+                            media: {
+                                videos: ['videos/BuCaKa.mp4'],
+                                images: []
+                            },
+                            sensorCount: 6,
+                            sensors: [
+                                { id: 1, type: 'Temperature', value: 19.2, unit: '°C', location: 'Basking Area' },
+                                { id: 2, type: 'Temperature', value: 18.5, unit: '°C', location: 'Cool Zone' },
+                                { id: 3, type: 'Humidity', value: 45, unit: '%', location: 'Hide Box' },
+                                { id: 4, type: 'Humidity', value: 42, unit: '%', location: 'Open Area' },
+                                { id: 5, type: 'Light', value: 250, unit: 'lux', location: 'Basking Spot' },
+                                { id: 6, type: 'Light', value: 50, unit: 'lux', location: 'Shelter' }
+                            ],
+                            lightingCycle: {
+                                active: true,
+                                lights: [
+                                    { id: 'heat1', name: 'Halogen Lamp', schedule: '6:00 AM - 6:00 PM', intensity: 75, active: true, icon: 'fas fa-sun' },
+                                    { id: 'fan1', name: 'Fan', schedule: 'Autonomous', intensity: 30, active: true, icon: 'fas fa-fan' },
+                                ]
+                            }
                         },
                         {
                             id: 'No Snake',
+                            name: 'Empty Enclosure',
+                            nickname: 'Available',
                             region: 'None',
                             enclosure: 'B8',
                             status: '',
                             temp: 26.5,
+                            temperature: 26.5,
                             humidity: 72,
                             tempRange: { min: 24, max: 30 },
+                            idealTemp: { min: 24, max: 30 },
                             humidityRange: { min: 60, max: 80 },
+                            idealHumidity: { min: 60, max: 80 },
                             alerts: [],
-                            needsAttention: false
+                            needsAttention: false,
+                            species: 'No species assigned',
+                            media: {
+                                videos: [],
+                                images: []
+                            },
+                            sensorCount: 4,
+                            sensors: [
+                                { id: 1, type: 'Temperature', value: 26.5, unit: '°C', location: 'Center' },
+                                { id: 2, type: 'Humidity', value: 72, unit: '%', location: 'Center' },
+                                { id: 3, type: 'Light', value: 180, unit: 'lux', location: 'Center' },
+                                { id: 4, type: 'Temperature', value: 25.8, unit: '°C', location: 'Corner' }
+                            ],
+                            lightingCycle: {
+                                active: false,
+                                lights: []
+                            }
                         },
                         {
                             id: 'No Snake',
+                            name: 'Empty Enclosure',
+                            nickname: 'Available',
                             region: 'None',
                             enclosure: 'B12',
                             status: '',
                             temp: 26.5,
+                            temperature: 26.5,
                             humidity: 72,
                             tempRange: { min: 24, max: 30 },
+                            idealTemp: { min: 24, max: 30 },
                             humidityRange: { min: 60, max: 80 },
+                            idealHumidity: { min: 60, max: 80 },
                             alerts: [],
-                            needsAttention: false
+                            needsAttention: false,
+                            species: 'No species assigned',
+                            media: {
+                                videos: [],
+                                images: []
+                            },
+                            sensorCount: 4,
+                            sensors: [
+                                { id: 1, type: 'Temperature', value: 26.5, unit: '°C', location: 'Center' },
+                                { id: 2, type: 'Humidity', value: 72, unit: '%', location: 'Center' },
+                                { id: 3, type: 'Light', value: 180, unit: 'lux', location: 'Center' },
+                                { id: 4, type: 'Temperature', value: 25.8, unit: '°C', location: 'Corner' }
+                            ],
+                            lightingCycle: {
+                                active: false,
+                                lights: []
+                            }
                         },
                     ],
 
@@ -476,6 +843,15 @@
                 medicalDueCount() {
                     return this.snakes.filter(snake => snake.medicalDue).length;
                 },
+
+                currentMediaArray() {
+                    if (!this.selectedSnake) return [];
+                    if (this.currentMediaType === 'video') {
+                        return this.selectedSnake.media.videos;
+                    } else {
+                        return this.selectedSnake.media.images;
+                    }
+                },
             },
 
             methods: {
@@ -540,8 +916,9 @@
                 },
 
                 showQR(snake) {
-                    this.selectedSnakeForQR = snake;
-                    this.showQRModal = true;
+                    this.selectedSnake = snake;
+                    this.currentMediaType = snake.media.videos.length > 0 ? 'video' : 'image';
+                    this.currentMediaIndex = 0;
                 },
 
                 closeQR() {
@@ -593,6 +970,73 @@
                 viewDetails(snake) {
                     // This would open a detailed view modal
                     this.showNotification('info', `Opening detailed view for ${snake.id}`);
+                },
+
+                closeSnakeProfile() {
+                    this.selectedSnake = null;
+                    this.currentMediaType = 'video';
+                    this.currentMediaIndex = 0;
+                },
+
+                switchMediaType(type) {
+                    this.currentMediaType = type;
+                    this.currentMediaIndex = 0;
+                },
+
+                previousMedia() {
+                    if (this.currentMediaIndex > 0) {
+                        this.currentMediaIndex--;
+                    } else {
+                        this.currentMediaIndex = this.currentMediaArray.length - 1;
+                    }
+                },
+
+                nextMedia() {
+                    if (this.currentMediaIndex < this.currentMediaArray.length - 1) {
+                        this.currentMediaIndex++;
+                    } else {
+                        this.currentMediaIndex = 0;
+                    }
+                },
+
+                startEdit(field) {
+                    if (this.adminMode) {
+                        // Focus handling is done automatically by contenteditable
+                    }
+                },
+
+                saveField(field, event) {
+                    if (this.adminMode && this.selectedSnake) {
+                        this.selectedSnake[field] = event.target.textContent;
+                        this.showNotification('success', `${field} updated successfully`);
+                    }
+                },
+
+                getSensorColor(type) {
+                    switch (type) {
+                        case 'Temperature':
+                            return 'bg-radium';
+                        case 'Humidity':
+                            return 'bg-uranium';
+                        case 'Light':
+                            return 'bg-yellow-500';
+                        default:
+                            return 'bg-text-mid';
+                    }
+                },
+
+                getSensorPosition(index, total) {
+                    // Distribute sensors around the perimeter of the enclosure
+                    const angle = (index / total) * 2 * Math.PI;
+                    const centerX = 50;
+                    const centerY = 50;
+                    const radiusX = 45;
+                    const radiusY = 45;
+
+                    const x = centerX + radiusX * Math.cos(angle);
+                    const y = centerY + radiusY * Math.sin(angle);
+
+                    return `left: ${x}%; top: ${y}%;`;
                 },
 
                 showNotification(type, message) {
